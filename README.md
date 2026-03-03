@@ -1,73 +1,33 @@
-# React + TypeScript + Vite
+# How Design Works
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A visual essay that breaks down the design principles behind the best websites on the internet. I analyzed 7 sites from Godly's 2026 collection and distilled what makes them feel premium into six chapters.
 
-Currently, two official plugins are available:
+## What this covers
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Typography** -- why one typeface with extreme scale contrast beats a family of fonts
+- **Color** -- the monochromatic-plus-one pattern and why decorative color kills credibility  
+- **Whitespace** -- bento grids, intentional gaps, and why empty space is the hardest thing to design
+- **Motion** -- spring physics over cubic-bezier, and when animation actually helps
+- **Emotional Register** -- the cozy vs. tech spectrum and how it cascades into every token
+- **Brand Archetypes** -- Jung's 12 archetypes as a design decision framework
 
-## React Compiler
+## Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+React, TypeScript, Vite, Tailwind CSS, Framer Motion
 
-## Expanding the ESLint configuration
+## Run locally
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Structure
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Each chapter is its own interactive component. Black editorial sections break up the flow. The pink section cycles "Design" through 8 languages. The manifesto at the end pulls it all together.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Built this to understand why some websites feel expensive and others don't. Turns out it comes down to about six decisions made well.
+
+---
+
+[lakshaydesigns.site](https://lakshaydesigns.site)

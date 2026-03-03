@@ -14,7 +14,7 @@ const takeaways = [
     { num: '10', text: 'The design system is the brand — documentation IS the product.' },
 ];
 
-const cellColors = ['#D300C5', '#F15A24', '#2563EB', '#9FE870', '#8E93FF', '#0A0A0A', '#E11D48', '#FACC15', '#808080', '#47F654'];
+const cellColors = ['#D300C5', '#F15A24', '#2563EB', '#9FE870', '#8E93FF', '#FF0050', '#E11D48', '#FACC15', '#808080', '#47F654'];
 
 const spring = { type: 'spring' as const, stiffness: 170, damping: 26 };
 
@@ -40,7 +40,7 @@ export default function Manifesto() {
     return (
         <section
             ref={ref}
-            className="relative min-h-screen py-40 md:py-48 px-10 md:px-20 lg:px-32 overflow-hidden"
+            className="relative min-h-screen py-20 md:py-28 px-10 md:px-20 lg:px-32 overflow-hidden"
             style={{ background: '#FFFFFF', color: '#1a1a1a' }}
         >
             <div className="max-w-5xl mx-auto relative z-10">
@@ -51,7 +51,7 @@ export default function Manifesto() {
                     transition={spring}
                     className="mb-6"
                 >
-                    <span className="text-xs font-medium tracking-[0.3em] uppercase" style={{ color: '#D300C5' }}>
+                    <span className="text-xs font-medium tracking-[0.3em] uppercase" style={{ color: '#FF0050' }}>
                         The Manifesto
                     </span>
                 </motion.div>
@@ -80,7 +80,7 @@ export default function Manifesto() {
                             className="flex items-start gap-6 py-7 group"
                             style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}
                         >
-                            {/* Colored number badge — each a different color like Instagram cells */}
+                            {/* Colored number badge — bright colors in contained cells */}
                             <motion.div
                                 className="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center mt-1"
                                 style={{ background: cellColors[i] }}
@@ -95,16 +95,16 @@ export default function Manifesto() {
                     ))}
                 </div>
 
-                {/* Closing ticker */}
-                <div className="mt-24 overflow-hidden rounded-full py-3" style={{ background: 'rgba(0,0,0,0.03)', border: '1px solid rgba(0,0,0,0.04)' }}>
+                {/* Closing ticker — hot pink accent */}
+                <div className="mt-24 overflow-hidden rounded-full py-3" style={{ background: '#FF0050', border: 'none' }}>
                     <div className="animate-marquee whitespace-nowrap">
-                        <span className="text-xs font-bold tracking-[0.15em]" style={{ color: 'rgba(0,0,0,0.12)' }}>
+                        <span className="text-xs font-bold tracking-[0.15em] text-white/60">
                             {'ONE FONT • EXTREME SCALE • WHITESPACE • COLOR HAS A JOB • SPRING PHYSICS • ARCHETYPES • CONSTRAINT = CREATIVITY • '.repeat(3)}
                         </span>
                     </div>
                 </div>
 
-                {/* Footer */}
+                {/* Footer note */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}

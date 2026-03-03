@@ -29,16 +29,6 @@ export default function App() {
         <TypographyRules />
       </ChapterHeading>
 
-      {/* Separator */}
-      <SectionBreak
-        lines={[
-          'What if you removed every decorative color?',
-          'Monochromatic base. One strategic accent.',
-          'That is the entire system.',
-        ]}
-        accent="#F15A24"
-      />
-
       {/* Ch.02 — Color Is a System */}
       <ChapterHeading
         number="02"
@@ -51,8 +41,13 @@ export default function App() {
         <ColorStory />
       </ChapterHeading>
 
-      {/* Pink visual break — cycling languages */}
-      <PinkBreak />
+      {/* Separator A — editorial style */}
+      <SectionBreak
+        variant="editorial"
+        label="Interlude"
+        heading="The space between elements carries more meaning than the elements themselves. Premium interfaces treat whitespace as a structural material — not leftover space."
+        body="The bento grid emerged as the dominant layout pattern across award-winning sites because it transforms empty space into intentional rhythm. Every gap, every margin, every breath between components is a deliberate design decision."
+      />
 
       {/* Ch.03 — Whitespace as Structure */}
       <ChapterHeading
@@ -66,15 +61,8 @@ export default function App() {
         <WhitespaceGrid />
       </ChapterHeading>
 
-      {/* Separator */}
-      <SectionBreak
-        lines={[
-          'Does your animation serve the interaction?',
-          'Spring physics replace easing curves.',
-          'Mass. Stiffness. Damping. Nothing else.',
-        ]}
-        accent="#8E93FF"
-      />
+      {/* Pink visual break — cycling languages */}
+      <PinkBreak />
 
       {/* Ch.04 — Motion With Intent */}
       <ChapterHeading
@@ -88,17 +76,7 @@ export default function App() {
         <MotionPhysics />
       </ChapterHeading>
 
-      {/* Separator */}
-      <SectionBreak
-        lines={[
-          'Is this Cozy or Tech?',
-          'The answer sets everything.',
-          'Palette. Radius. Shadow. Type.',
-        ]}
-        accent="#8B9A46"
-      />
-
-      {/* Ch.05 — The Vibe Check */}
+      {/* Ch.05 — The Emotional Register */}
       <ChapterHeading
         number="05"
         title="The Emotional Register"
@@ -110,14 +88,13 @@ export default function App() {
         <VibeCheck />
       </ChapterHeading>
 
-      {/* Separator */}
+      {/* Separator B — statement style with stat */}
       <SectionBreak
-        lines={[
-          'Are you The Sage or The Outlaw?',
-          'Every design decision has a personality.',
-          'Know the archetype. The rest follows.',
-        ]}
-        accent="#E11D48"
+        variant="statement"
+        label="Interlude"
+        heading="Every website has a personality. Most designers just never name it."
+        body="Carl Jung identified twelve archetypes that describe fundamental human motivations — The Sage seeks truth, The Outlaw breaks convention, The Explorer discovers the unknown. When applied to digital design, these archetypes become a decision-making framework that makes every choice inevitable rather than arbitrary."
+        stat={{ value: '12', unit: 'Archetypes' }}
       />
 
       {/* Ch.06 — Brand Archetypes */}

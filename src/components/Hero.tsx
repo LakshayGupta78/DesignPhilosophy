@@ -18,7 +18,7 @@ export default function Hero() {
             style={{ opacity }}
         >
             {/* Left: Magenta panel */}
-            <div className="w-1/2 relative flex flex-col justify-between p-16 lg:p-24" style={{ background: '#D300C5' }}>
+            <div className="w-1/2 relative flex flex-col items-center justify-between p-16 lg:p-24" style={{ background: '#D300C5' }}>
                 <div />
 
                 <div>
@@ -26,7 +26,7 @@ export default function Hero() {
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4, type: 'spring', stiffness: 150, damping: 20 }}
-                        className="text-[clamp(3rem,6vw,7rem)] font-bold leading-[1.05] tracking-[-0.02em] text-white"
+                        className="text-[clamp(5rem,10vw,11rem)] font-light leading-[1] tracking-[-0.03em] text-white"
                     >
                         How<br />
                         Design<br />
