@@ -1,46 +1,53 @@
-export default function Footer() {
+import { TONE, ACCENTS } from '../lib/theme';
+import Marquee from './Marquee';
+
+const t = TONE.ink;
+
+const links = [
+    { href: 'https://lakshaydesigns.site', label: 'Created by Lakshay', arrow: '→', cursor: 'visit' },
+    { href: 'https://godly.website', label: 'Godly Collection', arrow: '↗', cursor: 'source' },
+];
+
+export default function Footer({ id }: { id: string }) {
     return (
         <footer
-            className="relative h-screen flex flex-col overflow-hidden"
-            style={{ background: '#FFFFFF' }}
+            id={id}
+            className="relative flex h-screen flex-col overflow-hidden"
+            style={{ background: t.bg, color: t.text, borderTop: `1px solid ${t.line}` }}
         >
-            {/* Scrolling marquee — fills the viewport */}
-            <div className="flex-1 flex items-center overflow-hidden">
-                <div className="animate-marquee whitespace-nowrap">
-                    <span
-                        className="text-[clamp(8rem,15vw,16rem)] font-normal tracking-[-0.02em]"
-                        style={{ color: '#1a1a1a' }}
-                    >
-                        {'Type   Color   Grid   Motion   Vibe   Archetype   Type   Color   Grid   Motion   Vibe   Archetype   '}
+            <div className="flex flex-1 items-center overflow-hidden">
+                <Marquee duration={48} pauseOnHover={false}>
+                    <span className="display px-6 text-[clamp(4.5rem,15vw,15rem)] leading-[1.15] font-normal tracking-[-0.03em]">
+                        Type <span style={{ color: ACCENTS.magenta.fill }}>·</span> Colour{' '}
+                        <span style={{ color: ACCENTS.orange.fill }}>·</span> Grid{' '}
+                        <span style={{ color: ACCENTS.blue.fill }}>·</span> Motion{' '}
+                        <span style={{ color: ACCENTS.indigo.fill }}>·</span> Vibe{' '}
+                        <span style={{ color: ACCENTS.sage.fill }}>·</span> Archetype{' '}
+                        <span style={{ color: ACCENTS.rose.fill }}>·</span>{' '}
                     </span>
-                </div>
+                </Marquee>
             </div>
 
-            {/* Bottom bar — matches Instagram exactly: regular weight, ~14px, spaced links */}
             <div
-                className="px-10 md:px-20 lg:px-32 py-6 flex flex-wrap items-center gap-10"
-                style={{ borderTop: '1px solid rgba(0,0,0,0.08)' }}
+                className="flex flex-wrap items-center gap-x-10 gap-y-3 px-6 pt-6 pb-14 md:px-14 lg:px-24"
+                style={{ borderTop: `1px solid ${t.line}` }}
             >
-                <a
-                    href="https://lakshaydesigns.site"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[24px] font-normal text-[#1a1a1a] hover:opacity-60 transition-opacity"
-                >
-                    Created by Lakshay →
-                </a>
-                <a
-                    href="https://godly.website"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[24px] font-normal text-[#1a1a1a] hover:opacity-60 transition-opacity"
-                >
-                    Godly Collection ↗
-                </a>
-                <span className="text-[24px] font-normal" style={{ color: '#1a1a1a' }}>
+                {links.map((l) => (
+                    <a
+                        key={l.href}
+                        href={l.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-cursor={l.cursor}
+                        className="text-lg font-normal transition-opacity hover:opacity-60 md:text-2xl"
+                    >
+                        {l.label} {l.arrow}
+                    </a>
+                ))}
+                <span className="text-lg font-normal md:text-2xl" style={{ color: t.muted }}>
                     2026
                 </span>
-                <span className="ml-auto text-[24px] font-normal" style={{ color: 'rgba(0,0,0,0.35)' }}>
+                <span className="text-lg font-normal md:ml-auto md:text-2xl" style={{ color: t.faint }}>
                     How Design Works
                 </span>
             </div>

@@ -1,15 +1,50 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
+/* ============================================================
+   DESIGN TOKENS
+   The essay argues for "monochromatic + one accent". The site
+   obeys its own rule: one ink ramp, one paper ramp, and a set of
+   accents that each declare the text colour that is legible ON
+   them. Every pairing below is >= 4.5:1.
+   ============================================================ */
 @theme {
-    --color-midnight: #050511;
-    --color-oat: #FAF9F6;
-    --color-acid: #47F654;
-    --color-lavender: #8E93FF;
+    /* Ink ramp — cool near-black through mid greys */
+    --color-ink: #100F14;
+    --color-ink-2: #1C1B22;
+    --color-ink-3: #2E2C36;
+    --color-ink-4: #56545F;
+    --color-ink-5: #8B8892;
+
+    /* Paper ramp — warm off-whites. Never pure #FFF. */
+    --color-paper: #F6F4EF;
+    --color-paper-2: #EDEAE2;
+    --color-paper-3: #DFDBD1;
+
+    /* Accents: -fill is for backgrounds, -ink is the darkened
+       variant that is legible as text on paper. */
+    --color-magenta: #D300C5;
+    --color-magenta-ink: #A2007A;
+    --color-orange: #F15A24;
+    --color-orange-ink: #B23C10;
+    --color-blue: #2563EB;
+    --color-blue-ink: #1D4ED8;
+    --color-indigo: #8E93FF;
+    --color-indigo-ink: #4F46E5;
     --color-sage: #8B9A46;
-    --color-rose: #D4A0A0;
-    --color-clay: #C4A882;
-    --font-sans: 'Inter', system-ui, sans-serif;
+    --color-sage-ink: #5A6626;
+    --color-rose: #E11D48;
+    --color-rose-ink: #BE123C;
+
+    /* SF Pro on Apple platforms, Inter everywhere else. */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
+        'Inter', system-ui, sans-serif;
+    /* Display voice for headlines and statements. */
+    --font-display: 'Clash Display', -apple-system, BlinkMacSystemFont, 'SF Pro Display',
+        'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --font-serif: 'Instrument Serif', Georgia, serif;
+
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
@@ -20,101 +55,176 @@
     }
 
     html {
-        scroll-behavior: smooth;
+        /* Lenis drives scrolling; native smooth scroll would fight it. */
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        background: var(--color-ink);
     }
 
     body {
-        font-family: 'Inter', system-ui, sans-serif;
-        background: #050511;
-        color: #FAF9F6;
-        overflow-x: hidden;
+        font-family: var(--font-sans);
+        font-synthesis-weight: none;
+        background: var(--color-paper);
+        color: var(--color-ink);
+        overflow-x: clip;
         line-height: 1.5;
     }
 
     ::selection {
-        background: #47F654;
-        color: #050511;
+        background: var(--color-magenta);
+        color: #fff;
+    }
+
+    /* Visible, on-brand focus ring for keyboard users only. */
+    :focus-visible {
+        outline: 2px solid var(--color-magenta);
+        outline-offset: 3px;
+        border-radius: 4px;
+    }
+
+    button,
+    a,
+    input,
+    [role='button'] {
+        font: inherit;
+        color: inherit;
     }
 }
 
-/* ── Ticker / Marquee ── */
-@keyframes marquee {
-    0% {
-        transform: translateX(0);
+/* ── Display type ────────────────────────────────────
+   Clash Display carries a lot of weight in the counters, so it wants
+   slightly looser leading than a grotesque at the same size. `leading-none`
+   on a face like this clips descenders and Devanagari/Thai marks outright.
+   ───────────────────────────────────────────── */
+.display {
+    font-family: var(--font-display);
+    font-feature-settings: 'ss01' 1;
+}
+
+/* Any oversized line needs room for descenders; the glyph box is not the
+   line box. Used on every clamp()-scaled headline. */
+.display-safe {
+    line-height: 1.08;
+    padding-block: 0.08em;
+}
+
+/* ── Lenis ─────────────────────────────────────────────────── */
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+/* ── Seamless marquee ──────────────────────────────────────────
+   The old version translated -50% of the *container*, but the
+   content overflowed it, so every loop jumped. The track is now
+   width:max-content holding exactly two copies, which makes -50%
+   land precisely one copy along.
+   ─────────────────────────────────────────────────────────── */
+@keyframes marquee-x {
+    from {
+        transform: translate3d(0, 0, 0);
     }
 
-    100% {
-        transform: translateX(-50%);
+    to {
+        transform: translate3d(-50%, 0, 0);
     }
 }
 
-.animate-marquee {
-    animation: marquee 30s linear infinite;
+.marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee-x var(--marquee-duration, 40s) linear infinite;
+    will-change: transform;
 }
 
-/* ── Scroll Reveal ── */
-.reveal {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-        transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+.marquee>* {
+    flex: 0 0 auto;
 }
 
-.reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
+.marquee-host:hover .marquee {
+    animation-play-state: paused;
 }
 
-/* ── Section bases ── */
-.section-dark {
-    background: #050511;
-    color: #FAF9F6;
+/* ── Custom cursor ─────────────────────────────────────────── */
+@media (hover: hover) and (pointer: fine) {
+    body.has-cursor {
+        cursor: none;
+    }
+
+    body.has-cursor a,
+    body.has-cursor button,
+    body.has-cursor input,
+    body.has-cursor [data-cursor] {
+        cursor: none;
+    }
 }
 
-.section-light {
-    background: #FAF9F6;
-    color: #1a1a1a;
+/* ── Range inputs ──────────────────────────────────────────────
+   Styled explicitly so the control reads as designed rather than
+   as an OS default in the middle of a design essay.
+   ─────────────────────────────────────────────────────────── */
+input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--track, rgba(0, 0, 0, 0.18));
+    outline: none;
 }
 
-/* ── Glass card ── */
-.glass {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glass-light {
-    background: rgba(0, 0, 0, 0.03);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-/* ── Accent dot ── */
-.dot-accent::before {
-    content: '';
-    display: inline-block;
-    width: 8px;
-    height: 8px;
+input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    background: #47F654;
-    margin-right: 12px;
-    vertical-align: middle;
+    background: var(--thumb, #fff);
+    border: 2px solid var(--thumb-ring, transparent);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+    cursor: grab;
+    transition: transform 0.18s var(--ease-out-expo);
 }
 
-/* ── Custom scrollbar ── */
+input[type='range']::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.25);
+}
+
+input[type='range']::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--thumb, #fff);
+    border: 2px solid var(--thumb-ring, transparent);
+    cursor: grab;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
 ::-webkit-scrollbar {
-    width: 4px;
+    width: 0;
+    height: 0;
 }
 
-::-webkit-scrollbar-track {
-    background: #050511;
-}
+/* ── Reduced motion ────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
 
-::-webkit-scrollbar-thumb {
-    background: #47F654;
-    border-radius: 2px;
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .marquee {
+        animation: none;
+    }
 }

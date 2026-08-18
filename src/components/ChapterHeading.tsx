@@ -1,132 +1,144 @@
-import { useRef, useEffect, useState, type ReactNode } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef, type ReactNode } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { ACCENTS, TONE, type AccentName, type Tone } from '../lib/theme';
 
 interface Props {
+    id: string;
     number: string;
     title: string;
     subtitle: string;
     children: ReactNode;
-    bg?: string;
-    text?: string;
-    accent?: string;
+    accent: AccentName;
+    tone?: Tone;
 }
 
-function HighlightedText({ text, color }: { text: string; color: string }) {
+/**
+ * Scroll-driven word reveal.
+ *
+ * The un-revealed state used to be the text colour at 15% alpha, which
+ * measured 1.35:1 against paper — effectively invisible, and most of every
+ * subtitle sat in that state. It now rests at 4.6:1 (AA) and resolves to
+ * 17:1, so the effect still reads as a reveal but the copy is legible the
+ * whole way through.
+ */
+function RevealText({ text, base, active }: { text: string; base: string; active: string }) {
     const ref = useRef<HTMLParagraphElement>(null);
-    const [progress, setProgress] = useState(0);
-
-    useEffect(() => {
-        const el = ref.current;
-        if (!el) return;
-
-        const handleScroll = () => {
-            const rect = el.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-            const start = windowHeight;
-            const end = windowHeight * 0.3;
-            const current = rect.top;
-            const p = Math.max(0, Math.min(1, (start - current) / (start - end)));
-            setProgress(p);
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll();
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
+    const { scrollYProgress } = useScroll({
+        target: ref,
+        offset: ['start 0.9', 'start 0.35'],
+    });
+    const smooth = useSpring(scrollYProgress, { stiffness: 200, damping: 40, mass: 0.4 });
     const words = text.split(' ');
-    const highlightedWords = Math.floor(progress * words.length);
 
     return (
-        <p ref={ref} className="text-lg md:text-xl font-light max-w-3xl leading-relaxed">
+        <p ref={ref} className="max-w-3xl text-lg leading-relaxed font-light md:text-xl">
             {words.map((word, i) => (
-                <span
-                    key={i}
-                    className="transition-colors duration-300"
-                    style={{
-                        color: i < highlightedWords ? color : `${color}25`,
-                    }}
-                >
-                    {word}{' '}
-                </span>
+                <Word key={i} progress={smooth} index={i} total={words.length} base={base} active={active}>
+                    {word}
+                </Word>
             ))}
         </p>
     );
 }
 
-export default function ChapterHeading({ number, title, subtitle, children, bg = '#050511', text = '#FAF9F6', accent = '#47F654' }: Props) {
-    const sectionRef = useRef<HTMLElement>(null);
-    const [isVisible, setIsVisible] = useState(false);
+function Word({
+    progress,
+    index,
+    total,
+    base,
+    active,
+    children,
+}: {
+    progress: ReturnType<typeof useSpring>;
+    index: number;
+    total: number;
+    base: string;
+    active: string;
+    children: ReactNode;
+}) {
+    const start = index / total;
+    const end = (index + 1) / total;
+    const color = useTransform(progress, [start, end], [base, active]);
+    return <motion.span style={{ color }}>{children} </motion.span>;
+}
 
-    // Parallax for the title
+export default function ChapterHeading({
+    id,
+    number,
+    title,
+    subtitle,
+    children,
+    accent,
+    tone = 'paper',
+}: Props) {
+    const sectionRef = useRef<HTMLElement>(null);
+    const t = TONE[tone];
+    const a = ACCENTS[accent];
+    // On dark sections the vivid fill reads well; on paper we need the
+    // darkened variant to clear 4.5:1.
+    const accentText = tone === 'ink' ? a.up : a.ink;
+
     const { scrollYProgress } = useScroll({
         target: sectionRef,
         offset: ['start end', 'end start'],
     });
-    const numberOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        setIsVisible(true);
-                        entry.target.querySelectorAll('.reveal').forEach((el) => {
-                            el.classList.add('visible');
-                        });
-                    }
-                });
-            },
-            { threshold: 0.05 }
-        );
-        if (sectionRef.current) observer.observe(sectionRef.current);
-        return () => observer.disconnect();
-    }, []);
+    const markY = useTransform(scrollYProgress, [0, 1], [60, -60]);
 
     return (
         <section
             ref={sectionRef}
-            className="relative min-h-screen py-20 md:py-28 px-10 md:px-20 lg:px-32 overflow-hidden"
-            style={{ background: bg, color: text }}
+            id={id}
+            className="relative min-h-screen scroll-mt-0 overflow-hidden px-6 py-24 md:px-14 md:py-28 lg:px-24"
+            style={{ background: t.bg, color: t.text }}
         >
-            <div className="max-w-7xl mx-auto">
-                {/* Chapter number — parallax fade */}
+            {/* Oversized chapter numeral, parallaxed behind the content */}
+            <motion.span
+                aria-hidden="true"
+                style={{ y: markY, color: accentText, opacity: 0.07 }}
+                className="display pointer-events-none absolute -top-8 right-2 text-[clamp(9rem,26vw,26rem)] leading-none font-bold tracking-[-0.05em] select-none md:right-10"
+            >
+                {number}
+            </motion.span>
+
+            <div className="relative mx-auto max-w-7xl">
                 <motion.div
-                    className="mb-4"
-                    style={{ opacity: numberOpacity }}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-80px' }}
+                    transition={{ duration: 0.6 }}
+                    className="mb-5 flex items-center gap-4"
                 >
-                    <span className="text-xs font-medium tracking-[0.3em] uppercase" style={{ color: accent }}>
+                    <span className="h-px w-10" style={{ background: accentText }} />
+                    <span
+                        className="font-mono text-[10px] font-medium tracking-[0.3em] uppercase"
+                        style={{ color: accentText }}
+                    >
                         Chapter {number}
                     </span>
                 </motion.div>
 
-                {/* Title */}
-                <div className="mb-8">
-                    <div
-                        className="transition-all duration-700"
-                        style={{
-                            opacity: isVisible ? 1 : 0,
-                            transform: isVisible ? 'translateY(0)' : 'translateY(50px)',
-                        }}
-                    >
-                        <h2 className="text-[clamp(2.5rem,5vw,4.5rem)] font-extrabold leading-[0.95] tracking-[-0.03em]">
-                            {title}
-                        </h2>
-                    </div>
+                <motion.h2
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-80px' }}
+                    transition={{ type: 'spring', stiffness: 140, damping: 22 }}
+                    className="display display-safe mb-8 text-[clamp(2.4rem,5.5vw,4.5rem)] font-semibold tracking-[-0.03em]"
+                >
+                    {title}
+                </motion.h2>
+
+                <div className="mb-16 md:mb-24">
+                    <RevealText text={subtitle} base={t.faint} active={t.text} />
                 </div>
 
-                {/* Subtitle — scroll-driven word highlighting */}
-                <div className="mb-16 md:mb-20">
-                    <HighlightedText text={subtitle} color={text} />
-                </div>
-
-                {/* Content — reveal on scroll */}
-                <div
-                    className="reveal transition-all duration-1000"
-                    style={{ transitionDelay: '0.4s' }}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 >
                     {children}
-                </div>
+                </motion.div>
             </div>
         </section>
     );

@@ -1,142 +1,171 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { ACCENTS, TONE, INK, SPRING } from '../lib/theme';
 
 type Vibe = 'cozy' | 'tech';
 
 const vibes = {
     cozy: {
-        bg: '#FAF9F6',
-        surface: 'rgba(139, 154, 70, 0.08)',
-        border: 'rgba(0,0,0,0.08)',
-        text: '#2C2A29',
-        accent: '#8B9A46',
-        radius: '24px',
-        heading: '"Playfair Display", serif',
-        shadow: '0 20px 60px -15px rgba(139, 154, 70, 0.2)',
+        bg: '#F3EEE4',
+        text: '#2B2620',
+        accent: ACCENTS.sage.ink,
+        accentFill: ACCENTS.sage.fill,
+        radius: 24,
+        font: '"Instrument Serif", Georgia, serif',
+        weight: 400,
+        shadow: '0 22px 60px -18px rgba(90,102,38,0.45)',
         label: 'Warm',
-        h1: 'Aa',
         tokens: [
-            { key: 'Palette', val: 'Oat, Sage, Cream' },
-            { key: 'Radius', val: '24px' },
-            { key: 'Shadow', val: 'Colored, diffused' },
+            { key: 'Palette', val: 'Oat, sage, cream' },
+            { key: 'Radius', val: '24px — generous' },
+            { key: 'Shadow', val: 'Coloured, diffused' },
             { key: 'Type', val: 'Expressive serif' },
+            { key: 'Motion', val: 'Slow, settling' },
         ],
     },
     tech: {
-        bg: '#050511',
-        surface: 'rgba(255, 255, 255, 0.04)',
-        border: 'rgba(255,255,255,0.08)',
-        text: '#FFFFFF',
-        accent: '#47F654',
-        radius: '10px',
-        heading: '"Inter", sans-serif',
-        shadow: '0 0 30px -5px rgba(71, 246, 84, 0.15)',
+        bg: '#0B0B10',
+        text: '#EDEDF2',
+        accent: '#7CF2A0',
+        accentFill: '#7CF2A0',
+        radius: 8,
+        font: '"Inter", system-ui, sans-serif',
+        weight: 800,
+        shadow: '0 0 40px -6px rgba(124,242,160,0.35)',
         label: 'Precision',
-        h1: 'Aa',
         tokens: [
-            { key: 'Palette', val: 'Midnight, Acid, Void' },
-            { key: 'Radius', val: '10px' },
+            { key: 'Palette', val: 'Midnight, signal, void' },
+            { key: 'Radius', val: '8px — engineered' },
             { key: 'Shadow', val: 'Glow, tight' },
-            { key: 'Type', val: 'Tight sans-serif' },
+            { key: 'Type', val: 'Tight grotesque' },
+            { key: 'Motion', val: 'Fast, exact' },
         ],
     },
-};
+} as const;
 
-const spring = { type: 'spring' as const, stiffness: 170, damping: 26 };
+const t = TONE.paper;
 
 export default function VibeCheck() {
     const [vibe, setVibe] = useState<Vibe>('cozy');
     const v = vibes[vibe];
 
     return (
-        <div className="space-y-0">
-            {/* Bento: 3-column grid — toggle | specimen | tokens */}
-            <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr_280px] gap-0 rounded-3xl overflow-hidden" style={{ minHeight: '500px' }}>
-
-                {/* Left: Vertical toggle strip */}
-                <div className="p-8 flex flex-col justify-between" style={{ background: '#0A0A0A' }}>
-                    <div>
-                        <p className="text-[10px] font-mono uppercase tracking-wider mb-8 text-white/25">Register</p>
-                        {(['cozy', 'tech'] as Vibe[]).map((key) => (
-                            <motion.button
-                                key={key}
-                                onClick={() => setVibe(key)}
-                                whileTap={{ scale: 0.96 }}
-                                className="w-full text-left px-4 py-3 mb-2 rounded-xl text-sm font-semibold transition-all duration-300"
-                                style={{
-                                    background: vibe === key ? (key === 'cozy' ? '#8B9A46' : '#47F654') : 'transparent',
-                                    color: vibe === key ? (key === 'cozy' ? '#fff' : '#050511') : 'rgba(255,255,255,0.3)',
-                                    border: `1px solid ${vibe === key ? 'transparent' : 'rgba(255,255,255,0.06)'}`,
-                                }}
-                            >
-                                {key === 'cozy' ? '☀ Cozy' : '⚡ Tech'}
-                            </motion.button>
-                        ))}
+        <div className="space-y-10">
+            <div
+                className="grid grid-cols-1 overflow-hidden rounded-3xl lg:grid-cols-[190px_1fr_290px]"
+                style={{ border: `1px solid ${t.line}` }}
+            >
+                {/* Toggle */}
+                <div className="p-7" style={{ background: INK }}>
+                    <p className="mb-6 font-mono text-[10px] tracking-[0.2em] uppercase" style={{ color: TONE.ink.faint }}>
+                        Register
+                    </p>
+                    <div className="flex gap-2 lg:flex-col">
+                        {(['cozy', 'tech'] as Vibe[]).map((key) => {
+                            const on = vibe === key;
+                            const conf = vibes[key];
+                            return (
+                                <motion.button
+                                    key={key}
+                                    onClick={() => setVibe(key)}
+                                    whileTap={{ scale: 0.96 }}
+                                    data-cursor={key}
+                                    aria-pressed={on}
+                                    className="flex-1 rounded-xl px-4 py-3 text-left text-sm font-semibold transition-colors duration-300"
+                                    style={{
+                                        background: on ? conf.accentFill : 'transparent',
+                                        color: on ? INK : TONE.ink.muted,
+                                        border: `1px solid ${on ? conf.accentFill : TONE.ink.line}`,
+                                    }}
+                                >
+                                    {key === 'cozy' ? 'Cozy' : 'Tech'}
+                                </motion.button>
+                            );
+                        })}
                     </div>
                 </div>
 
-                {/* Center: Giant type specimen */}
-                <AnimatePresence mode="wait">
+                {/* Specimen. The whole panel cross-fades in place — the previous
+                    version unmounted a grid column mid-swap, which collapsed the
+                    layout to two columns and snapped back on every toggle. */}
+                <motion.div
+                    className="relative flex min-h-[360px] items-center justify-center overflow-hidden"
+                    animate={{ background: v.bg }}
+                    transition={{ duration: 0.45 }}
+                >
                     <motion.div
                         key={vibe}
-                        initial={{ opacity: 0, scale: 0.97 }}
+                        initial={{ opacity: 0, scale: 0.96 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.97 }}
-                        transition={spring}
-                        className="flex items-center justify-center"
-                        style={{ background: v.bg }}
+                        transition={SPRING}
+                        className="text-center"
                     >
-                        <div className="text-center">
-                            <motion.span
-                                className="text-[clamp(8rem,18vw,16rem)] font-black leading-none tracking-[-0.04em] select-none block"
-                                style={{ fontFamily: v.heading, color: v.text, textShadow: v.shadow }}
-                            >
-                                {v.h1}
-                            </motion.span>
-                            <span
-                                className="text-xs font-mono tracking-[0.2em] uppercase mt-4 block"
-                                style={{ color: v.accent }}
-                            >
-                                {v.label}
-                            </span>
-                        </div>
+                        <span
+                            className="block text-[clamp(6rem,16vw,13rem)] leading-none tracking-[-0.03em] select-none"
+                            style={{
+                                fontFamily: v.font,
+                                fontWeight: v.weight,
+                                color: v.text,
+                                textShadow: v.shadow,
+                            }}
+                        >
+                            Aa
+                        </span>
+                        <span
+                            className="mt-4 block font-mono text-[10px] tracking-[0.24em] uppercase"
+                            style={{ color: v.accent }}
+                        >
+                            {v.label}
+                        </span>
                     </motion.div>
-                </AnimatePresence>
 
-                {/* Right: Token list */}
-                <AnimatePresence mode="wait">
+                    {/* Radius made visible */}
                     <motion.div
-                        key={vibe + '-tokens'}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="p-8 flex flex-col justify-center"
-                        style={{ background: v.bg, borderLeft: `1px solid ${v.border}` }}
-                    >
-                        <p className="text-[10px] font-mono uppercase tracking-wider mb-6" style={{ color: v.accent }}>
-                            Design Tokens
-                        </p>
-                        <div className="space-y-4">
-                            {v.tokens.map((t, i) => (
-                                <motion.div
-                                    key={t.key}
-                                    initial={{ opacity: 0, x: 10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ ...spring, delay: i * 0.08 }}
+                        className="absolute right-6 bottom-6 h-14 w-14 border-2"
+                        animate={{ borderRadius: v.radius, borderColor: v.accent }}
+                        transition={SPRING}
+                    />
+                </motion.div>
+
+                {/* Tokens */}
+                <motion.div
+                    className="flex flex-col justify-center p-8"
+                    animate={{ background: v.bg }}
+                    transition={{ duration: 0.45 }}
+                    style={{ borderLeft: `1px solid rgba(128,128,128,0.22)` }}
+                >
+                    <p className="mb-6 font-mono text-[10px] tracking-[0.2em] uppercase" style={{ color: v.accent }}>
+                        Design Tokens
+                    </p>
+                    <div className="space-y-4">
+                        {v.tokens.map((tok, i) => (
+                            <motion.div
+                                key={tok.key}
+                                initial={{ opacity: 0, x: 12 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ ...SPRING, delay: i * 0.06 }}
+                            >
+                                <p className="font-mono text-[9px] tracking-[0.18em] uppercase" style={{ color: v.text, opacity: 0.55 }}>
+                                    {tok.key}
+                                </p>
+                                <motion.p
+                                    key={tok.val}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="text-sm font-medium"
+                                    style={{ color: v.text }}
                                 >
-                                    <p className="text-[10px] font-mono uppercase tracking-wider" style={{ color: `${v.text}40` }}>
-                                        {t.key}
-                                    </p>
-                                    <p className="text-sm font-medium" style={{ color: v.text }}>
-                                        {t.val}
-                                    </p>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </motion.div>
-                </AnimatePresence>
+                                    {tok.val}
+                                </motion.p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
             </div>
+
+            <p className="max-w-3xl text-base leading-relaxed font-light md:text-lg" style={{ color: t.muted }}>
+                One decision — warm or precise — cascades into every token underneath it.
+            </p>
         </div>
     );
 }
